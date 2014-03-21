@@ -41,7 +41,14 @@ def classify_orbs(frame):
   height, width, _ = hsv.shape
   size = width / 6
 
-  ystart = height - size * 5
+  # compute true baseline from the bottom (necessary for some form-factors)
+  yend = height
+  while True:
+    yend -= 1
+    if max(hsv[yend, width / 2]) > 0:
+      break
+
+  ystart = yend - size * 5
 
   data = []
   for y in range(5):
