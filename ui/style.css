@@ -1,0 +1,32 @@
+.img-board {
+  padding-bottom: 10px;
+}
+
+
+
+/* blank squares */
+.orb-0 {visibility: hidden;}
+
+/* heart icons */
+.glyphicon-heart {color: rgb(252, 40, 203);}
+.orb-6 {fill: rgb(252, 40, 203);}
+
+/* water icons */
+.glyphicon-tint {color: rgb(67, 116, 227);}
+.orb-2 {fill: rgb(67, 116, 227);}
+
+/* light icons */
+.glyphicon-asterisk{color: rgb(252, 213, 0);}
+.orb-4 {fill: rgb(252, 213, 0);}
+
+/* fire icons */
+.glyphicon-fire {color: rgb(227, 50, 50);}
+.orb-1 {fill: rgb(227, 50, 50);}
+
+/* wood icons */
+.glyphicon-leaf {color: rgb(14, 136, 61);}
+.orb-3 {fill: rgb(14, 136, 61);}
+
+/* wood icons */
+.glyphicon-adjust {color: rgb(99, 33, 129);}
+.orb-5 {fill: rgb(99, 33, 129);}

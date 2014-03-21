@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+  <head>
+    <title>pndsolver</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.2/angular.min.js"></script>
+  </head>
+  <body ng-controller="PndCtrl">
+
+    <div class="container">
+      <h1 class='page-header'>pndsolver <small>control panel</small></h1>
+      <div class="row">
+        
+        <!-- left column -->
+        <div class="col-xs-2">
+          <pndgrid board="board"></pndgrid>
+          <div id="map-container"></div>
+          <img class="img-board img-responsive" src="http://placekitten.com/480/800" />
+          <button class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
+        </div>
+         
+        <!-- main second column -->
+        <div class="col-xs-10">
+          <div class="row">
+            <h3>Team Stats</h3>
+            <div class="col-xs-6">
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-heart"></i>
+                </span>
+                <input type="text" class="form-control input-sm" placeholder="RCU">
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-tint"></i>
+                </span>
+                <input type="text" class="form-control input-sm" placeholder="ATK">
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-asterisk"></i>
+                </span>
+                <input type="text" class="form-control input-sm" placeholder="ATK">
+              </div>
+            </div>
+            <div class='col-xs-6'>
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-fire"></i>
+                </span>
+                <input type="text" class="form-control input-sm" placeholder="ATK">
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-leaf"></i>
+                </span>
+                <input type="text" class="form-control input-sm" placeholder="ATK">
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-adjust"></i>
+                </span>
+                <input type="text" class="form-control input-sm" placeholder="ATK">
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">   
+            <h3>Solution List</h3>
+            <table class="table table-condensed ">
+              <thead>
+                <tr>
+                  <th>Weight</th>
+                  <th>Damage</th>
+                  <th>Combos</th>
+                  <th>Run?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="s in solutions">
+                  <td>{{s.damage}}</td>
+                  <td>{{s.combos}}</td>
+                  <td>13123</td>
+                  <td><button class='btn btn-xs btn-primary'>Go!</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+      </div>
+
+    </div>
+  </body>
+  <script src="main.js"></script>
+</html>
