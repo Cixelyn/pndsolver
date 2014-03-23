@@ -26,7 +26,7 @@ ORB_DATA = {
     termcolor=196,
     termchar='㊋',
     drawcolor=(252,81,50),
-    huerange=(18, 32),
+    huerange=(18, 37),
   ),
   0x02: OrbInfo(
     name='Water',
@@ -34,7 +34,7 @@ ORB_DATA = {
     termcolor=68,
     termchar='㊌',
     drawcolor=(66,130,202),
-    huerange=(138, 152),
+    huerange=(136, 152),
   ),
   0x03: OrbInfo(
     name='Wood',
@@ -50,7 +50,7 @@ ORB_DATA = {
     termcolor=227,
     termchar='㊐',
     drawcolor=(255,238,85),
-    huerange=(33, 47),
+    huerange=(37, 47),
   ),
   0x05: OrbInfo(
     name='Dark',

@@ -1,10 +1,12 @@
 from cStringIO import StringIO
+from pprint import pprint
+
 from xtermcolor import colorize
 
 from .data import ORB_DATA
 
 
-def print_board(board):
+def board_to_coloredstring(board):
   sb = StringIO()
   for y in range(5):
     for x in range(6):
@@ -15,4 +17,16 @@ def print_board(board):
                         ansi_bg=21 if plus else None,
                         ))
     sb.write('\n')
-  print sb.getvalue()
+  return sb.getvalue()
+
+
+def board_to_pndopt(board):
+  sb = StringIO()
+  for d in board.data:
+    sb.write(ORB_DATA[d & 0x0F].abbr)
+  return sb.getvalue()
+
+
+def debug_hue_ranges():
+  data = [(od.name, od.huerange) for od in ORB_DATA.values() if od.huerange]
+  pprint(sorted(data, key=lambda (k,v): v[0]))
