@@ -1,5 +1,11 @@
+import contextlib
+import tempfile
+import shutil
+import os
+
 from cStringIO import StringIO
 from pprint import pprint
+import numpy as np
 
 from xtermcolor import colorize
 
@@ -29,4 +35,19 @@ def board_to_pndopt(board):
 
 def debug_hue_ranges():
   data = [(od.name, od.huerange) for od in ORB_DATA.values() if od.huerange]
-  pprint(sorted(data, key=lambda (k,v): v[0]))
+  pprint(sorted(data, key=lambda (k, v): v[0]))
+
+
+def bgr_to_rgb(img):
+  return np.fliplr(img.reshape(-1,3)).reshape(img.shape)
+
+@contextlib.contextmanager
+def temp_dir_ctx(*args, **kwargs):
+  temp = tempfile.mkdtemp(*args, **kwargs)
+  orig = os.getcwd()
+  try:
+    os.chdir(temp)
+    yield
+  finally:
+    shutil.rmtree(temp)
+    os.chdir(orig)

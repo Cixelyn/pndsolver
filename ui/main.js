@@ -22,7 +22,7 @@ app.directive('pndgrid', function () {
       board: '='
     },
     link: function (scope, element, attrs) {
-      
+
       var orbsize = 15,
         width = orbsize * 6,
         height = orbsize * 5,
@@ -36,16 +36,16 @@ app.directive('pndgrid', function () {
 
       scope.$watch('board', function (newVal, oldVal) {
         console.log('update!');
-        
+
         var orbs = svg.selectAll('circle')
           .data(newVal);
-                
+
         orbs.enter()
           .append('circle')
           .attr('cx', function (d, i) {return (i % 6) * orbsize + orbsize / 2; })
           .attr('cy', function (d, i) {return Math.floor(i / 6) * orbsize + orbsize / 2; })
           .attr('r', 0);
-        
+
         orbs
           .attr('class', function (d) {return 'orb-' + d; });
 
@@ -61,14 +61,14 @@ app.directive('pndgrid', function () {
 
 app.controller('PndCtrl', function PndCtrl($scope) {
   "use strict";
-  
+
   $scope.board = randomBoard();
   $scope.solutions = [
     {damage: 2, combos: 2},
     {damage: 3, combos: 1},
     {damage: 6, combos: 1}
   ];
-  
+
   $scope.capture = function () {
     $scope.board = randomBoard();
   };
