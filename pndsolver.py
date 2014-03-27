@@ -4,9 +4,9 @@
 """Puzzle and Dragons Solver.
 
 Usage:
-  pndsolver.py grab (-a | -i | -m) [-o] [--dump=<outfile>]
+  pndsolver.py grab (-a | -i | -m) [-os] [--dump=<outfile>]
+  pndsolver.py load <filename> [-os]
   pndsolver.py gui (-a | -i | -m) [--port=<port>]
-  pndsolver.py load <filename>
   pndsolver.py debug
   pndsolver.py --help
 
@@ -24,6 +24,7 @@ Options:
   -d --dump=<outfile>     Dump captured frame to file.
   -p --port=<port>        Sets server port number [default: 9999]
   -o --pndopt             Write pndopt file to stdout
+  -s --solve              Attempt to solve with default parameters
 """
 
 from docopt import docopt
@@ -60,10 +61,14 @@ if __name__ == '__main__':
       frame = cv2.imread(args['<filename>'])
 
     board = classify_orbs(frame)
-    if args['--pndopt']:
-      sys.stdout.write(board_to_pndopt(board))
+
+    if args['--solve']:
+      print 'attempting to solve'
     else:
-      sys.stdout.write(board_to_coloredstring(board))
+      if args['--pndopt']:
+        sys.stdout.write(board_to_pndopt(board))
+      else:
+        sys.stdout.write(board_to_coloredstring(board))
 
     if args['--dump']:
       cv2.imwrite(args['--dump'], frame)

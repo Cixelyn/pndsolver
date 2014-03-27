@@ -1,8 +1,6 @@
-.img-board {
+#img-board {
   padding-bottom: 10px;
 }
-
-
 
 /* blank squares */
 .orb-0 {visibility: hidden;}
