@@ -1,8 +1,7 @@
 /*jslint nomen: true*/
 /*global d3, angular, _, console*/
 
-var app = angular.module('app', []);
-var board = [2, 1, 4, 3, 4, 1, 1, 1, 3, 3, 3, 5, 2, 5, 3, 4, 3, 4, 1, 4, 4, 3, 4, 3, 1, 5, 3, 1, 3, 5];
+var app = angular.module('app', ['ngAnimate', 'chieffancypants.loadingBar']);
 
 function randomBoard() {
   "use strict";
@@ -14,12 +13,21 @@ function randomBoard() {
   return b;
 }
 
+function emptyBoard() {
+  "use strict";
+  var b = [],
+    i = 0;
+  for (i; i < 30; i += 1) {b.push(0);}
+  return b;
+}
+
 app.directive('pndgrid', function () {
   "use strict";
   return {
     restrict: 'E',
     scope: {
-      board: '='
+      board: '=',
+      paths: '='
     },
     link: function (scope, element, attrs) {
 
@@ -32,12 +40,50 @@ app.directive('pndgrid', function () {
           .attr('height', "100%")
           .style('max-height', '600px')
           .attr('viewBox', '0 0 ' + Math.max(width, height) + ' ' + Math.max(width, height))
-          .attr('preserveAspectRatio', 'xMinYMin');
+          .attr('preserveAspectRatio', 'xMinYMin'),
+
+        orblayer = svg.append('g').attr('class', 'orbslayer'),
+        pathlayer = svg.append('g').attr('class', 'pathlayer');
+
+      svg.append('marker')
+        .attr({
+          id: 'arrow',
+          markerWidth: 4,
+          markerHeight: 4,
+          orient: "auto",
+          viewBox: "-3 -3 6 6"
+          }).append('polygon').attr('points', '-1,0 -3,3 3,0 -3,-3');
+
+
+      var line = d3.svg.line()
+        .x(function (d) {
+          return d[0] * orbsize + orbsize/2;
+        })
+        .y(function (d) {
+          return d[1] * orbsize + orbsize/2;
+        })
+        .interpolate("linear");
+
+      scope.$watch('paths', function(newVal, oldVal) {
+
+        var paths = pathlayer.selectAll('path')
+          .data(newVal);
+
+        paths.enter()
+          .append('path');
+
+        paths
+          .attr('d', line)
+          .attr('marker-end', "url(#arrow)");
+
+        paths.exit()
+          .remove();
+      });
 
       scope.$watch('board', function (newVal, oldVal) {
         console.log('update!');
 
-        var orbs = svg.selectAll('circle')
+        var orbs = orblayer.selectAll('circle')
           .data(newVal);
 
         orbs.enter()
@@ -51,7 +97,7 @@ app.directive('pndgrid', function () {
 
         orbs.transition()
           .attr('r', orbsize / 2)
-          .duration(function () {return _.random(500, 1000); });
+          .duration(function () {return _.random(300, 700); });
         orbs.exit().transition()
           .remove();
       });
@@ -59,18 +105,60 @@ app.directive('pndgrid', function () {
   };
 });
 
-app.controller('PndCtrl', function PndCtrl($scope) {
+
+app.controller('PndCtrl', function PndCtrl($scope, $http) {
   "use strict";
 
-  $scope.board = randomBoard();
-  $scope.solutions = [
-    {damage: 2, combos: 2},
-    {damage: 3, combos: 1},
-    {damage: 6, combos: 1}
-  ];
+  $scope.board = emptyBoard();
+  $scope.paths = [];
+  $scope.frame = "";
+
+  $scope.parameters = {
+    depth: 6
+  };
+
+  $scope.team = {
+    hl: null,
+    fr: null,
+    wd: null,
+    wt: null,
+    dk: null,
+    lt: null
+  }
+
+  $scope.solutions = [];
 
   $scope.capture = function () {
-    $scope.board = randomBoard();
+    $scope.board = [];
+    $scope.paths = [];
+    $http.get('/capture').success(function(data) {
+      $scope.frame = data.frame;
+      $scope.board = data.board;
+    });
   };
+
+  $scope.solve = function() {
+    $scope.solutions = [];
+    $http.post('/solve', {board: $scope.board}).success(function(data) {
+      $scope.solutions = data;
+    });
+  };
+
+  $scope.run = function(path) {
+    console.log("running solution" + path);
+  };
+
+  $scope.show = function(path) {
+    console.log("showing solution" + path);
+    $scope.paths = [path];
+  };
+
+  $scope.hasSolutions = function() {
+    return $scope.solutions.length > 0;
+  };
+
+  $scope.calculateDamage = function(solution) {
+    return $scope.team.hl + 1;
+  }
 
 });

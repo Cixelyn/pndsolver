@@ -63,7 +63,8 @@ if __name__ == '__main__':
     board = classify_orbs(frame)
 
     if args['--solve']:
-      print 'attempting to solve'
+      pass
+
     else:
       if args['--pndopt']:
         sys.stdout.write(board_to_pndopt(board))

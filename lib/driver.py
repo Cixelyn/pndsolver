@@ -2,9 +2,6 @@
 """
 
 from subprocess import check_output
-import cStringIO
-import numpy
-
 
 import cv2
 

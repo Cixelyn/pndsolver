@@ -3,13 +3,16 @@
   <head>
     <title>pndsolver</title>
 
-    <link rel="stylesheet", href='bower_components/bootstrap/dist/css/bootstrap.min.css'>
+    <link rel="stylesheet" href='bower_components/bootstrap/dist/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css">
     <link rel="stylesheet" href="style.css">
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
 
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-loading-bar/src/loading-bar.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/d3/d3.min.js"></script>
 
@@ -22,14 +25,16 @@
 
         <!-- left column -->
         <div class="col-xs-2">
-          <pndgrid board="board"></pndgrid>
+          <pndgrid board="board" paths="paths"></pndgrid>
           <div id="map-container"></div>
-          <img id="img-board" class="img-responsive" src="http://placekitten.com/480/800" />
-          <button class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
+          <button id='btn-capture' class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
+          <img id="img-board" class="img-responsive" ng-src="{{frame}}" />
         </div>
 
         <!-- main second column -->
         <div class="col-xs-10">
+
+          <!-- team stats section -->
           <div class="row">
             <h3>Team Stats</h3>
             <div class="col-xs-6">
@@ -37,19 +42,30 @@
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-heart"></i>
                 </span>
-                <input type="text" class="form-control input-sm" placeholder="RCU">
+                <input type="number" ng-model="team.hl" class="form-control input-sm" placeholder="RCU">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+                    <ul class="dropdown-menu pull-right">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+
+                </div>
               </div>
               <div class="input-group">
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-tint"></i>
                 </span>
-                <input type="text" class="form-control input-sm" placeholder="ATK">
+                <input type="number" ng-model="team.wt" class="form-control input-sm" placeholder="ATK">
               </div>
               <div class="input-group">
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-asterisk"></i>
                 </span>
-                <input type="text" class="form-control input-sm" placeholder="ATK">
+                <input type="number" ng-model="team.lt" class="form-control input-sm" placeholder="ATK">
               </div>
             </div>
             <div class='col-xs-6'>
@@ -57,47 +73,54 @@
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-fire"></i>
                 </span>
-                <input type="text" class="form-control input-sm" placeholder="ATK">
+                <input type="number" ng-model="team.fr" class="form-control input-sm" placeholder="ATK">
               </div>
               <div class="input-group">
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-leaf"></i>
                 </span>
-                <input type="text" class="form-control input-sm" placeholder="ATK">
+                <input type="number" ng-model="team.wd" class="form-control input-sm" placeholder="ATK">
               </div>
               <div class="input-group">
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-adjust"></i>
                 </span>
-                <input type="text" class="form-control input-sm" placeholder="ATK">
+                <input type="number" ng-model="team.dk" class="form-control input-sm" placeholder="ATK">
               </div>
             </div>
           </div>
 
+          <!-- solutions list section -->
           <div class="row">
-            <h3>Solution List</h3>
-            <table class="table table-condensed ">
+            <h3>Solution List<button class="btn btn-primary pull-right" ng-click="solve()">Generate</button></h3>
+            <p ng-hide="hasSolutions()">No current solutions...</p>
+            <table class="table table-condensed table-hover" ng-show="hasSolutions()">
               <thead>
                 <tr>
-                  <th>Weight</th>
+                  <th>Score</th>
+                  <th>Length</th>
                   <th>Damage</th>
                   <th>Combos</th>
                   <th>Run?</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="s in solutions">
-                  <td>{{s.damage}}</td>
+                <tr ng-repeat="s in solutions" ng-click="show(s.path)">
+                  <td>{{s.score}}</td>
+                  <td>{{s.path.length}}</td>
+                  <td>{{calculateDamage(s)}}</td>
                   <td>{{s.combos}}</td>
-                  <td>13123</td>
-                  <td><button class='btn btn-xs btn-primary'>Go!</button></td>
+                  <td><button
+                          class='btn btn-xs btn-primary'
+                          ng-click="run(s.path)">Go!</button></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-      </div>
 
+        </div>
+      </div>
     </div>
   </body>
   <script src="main.js"></script>

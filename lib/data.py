@@ -2,7 +2,7 @@
 
 from collections import namedtuple
 
-OrbInfo = namedtuple('OrbData', [
+OrbInfo = namedtuple('OrbInfo', [
     'name',
     'abbr',
     'termcolor',
