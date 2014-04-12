@@ -69,6 +69,8 @@ def worker(work_queue, done_queue, board, depth):
   for start_pos in iter(work_queue.get, 'STOP'):
     done_queue.put(solve_position(start_pos, board, depth))
 
+# TODO: memoization of solved board states
+# TODO: don't explore first paths that flip the same piece
 
 def solve_position(start_pos, board, depth=5):
   max_combos = 0
@@ -88,5 +90,5 @@ def solve_position(start_pos, board, depth=5):
 
 if __name__ == '__main__':
   from models import Board
-  board = Board.random_board()
-  print solve_board_multithreaded(board, depth=8, workers=4)
+  board = Board.random_board(1)
+  print solve_board_multithreaded(board, depth=9, workers=6)

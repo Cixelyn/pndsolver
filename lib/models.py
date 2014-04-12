@@ -10,7 +10,9 @@ class Board(object):
       self.data = data
 
   @classmethod
-  def random_board(cls):
+  def random_board(cls, seed=None):
+    if seed is not None:
+      random.seed(seed)
     return cls([random.randint(1, 6) for _ in range(30)])
 
   def get_plus(self, (x,y)):
@@ -47,7 +49,7 @@ class Board(object):
 
   def get_matches(self):
     """ computes matches on the board """
-    marked_squares = set()
+    marked_squares = []
     for x in range(0, 6):
       for y in range(0, 5):
         hlines = ((x-1, y),
@@ -59,8 +61,8 @@ class Board(object):
         for line in (hlines, vlines):
           (v1, v2, v3) = map(self.get, line)
           if v1 > 0 and v1 == v2 and v1 == v3:
-            marked_squares.update(map(tuple, line))
-    return marked_squares
+            marked_squares.extend(map(tuple, line))
+    return frozenset(marked_squares)
 
   def drop_matches(self, matches):
     """ mutates a board w/ matches removed """
@@ -79,21 +81,22 @@ class Board(object):
     combos = []
 
     # floodfill all match combos
-    for m in matches:
-      def check(x, y, val, visited):
-        p = (x,y)
-        if p in matches and self.get(p) == val and p not in visited:
-          visited.add(p)
-          check(x  , y-1, val, visited)
-          check(x  , y+1, val, visited)
-          check(x-1, y  , val, visited)
-          check(x+1, y  , val, visited)
-        return visited
-      combos.append(check(m[0], m[1], self.get(m), set()))
+    checked = set()
+    def check(x, y, val, matchset, visitcombo):
+      p = (x, y,)
+      if p in matchset and self.get(p) == val and p not in checked:
+        checked.add(p)
+        visitcombo.add(p)
+        check(x  , y-1, val, matchset, visitcombo)
+        check(x  , y+1, val, matchset, visitcombo)
+        check(x-1, y  , val, matchset, visitcombo)
+        check(x+1, y  , val, matchset, visitcombo)
+      return visitcombo
 
-    # remove the duplicate ones
-    combos = [sorted(c) for c in combos]
-    return {c[0]: c for c in combos}.values()
+    for m in matches:
+      if m not in checked:
+        combos.append(check(m[0], m[1], self.get(m), matches, set()))
+    return combos
 
   def score_board(self):
     """ scores the current configuration of the board """
