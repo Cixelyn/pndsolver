@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """ board solver module
-usable as a library but also as a stand-alone process (e.g. pypy integration)
+
+Usable as a library but also as a stand-alone process for pypy integration
 """
 
-from collections import namedtuple
 
 def in_board(pos):
   x, y = pos
@@ -30,33 +33,60 @@ def recurse_paths(cursor, path=tuple(), depth=2):
 
 
 def solve_board(board, depth=5):
-  max_combos = 0
-  solution_board = None
-  solution_path = None
+  solutions = []
 
   for x in range(6):
     for y in range(5):
-      for p in recurse_paths((x,y), depth=depth):
-        b = board.copy()
-        score = b.runpath(p).score_board()
-        if score > max_combos:
-          max_combos = score
-          solution_board = b
-          solution_path = p
-
-  solutions = [
-    {
-      'score': max_combos,
-      'path': solution_path,
-    }
-  ]
-
+      solutions.append(solve_position((x, y), board, depth=depth))
   return solutions
 
 
-if __name__ == '__main__':
+def solve_board_multithreaded(board, depth=5, workers=4):
+  from multiprocessing import Process, Queue
+  work_queue = Queue()
+  done_queue = Queue()
+  processes = []
 
+  for x in range(6):
+    for y in range(5):
+      work_queue.put((x, y))
+
+  for w in range(workers):
+    p = Process(target=worker, args=(work_queue, done_queue, board, depth))
+    processes.append(p)
+    work_queue.put('STOP')
+    p.start()
+
+  for p in processes:
+    p.join()
+
+  done_queue.put('STOP')
+
+  return list(iter(done_queue.get, 'STOP'))
+
+
+def worker(work_queue, done_queue, board, depth):
+  for start_pos in iter(work_queue.get, 'STOP'):
+    done_queue.put(solve_position(start_pos, board, depth))
+
+
+def solve_position(start_pos, board, depth=5):
+  max_combos = 0
+  solution_path = None
+
+  for p in recurse_paths(start_pos, depth=depth):
+    b = board.copy()
+    score = b.runpath(p).score_board()
+    if score > max_combos:
+      max_combos = score
+      solution_path = p
+
+  return {
+      'score': max_combos,
+      'path': solution_path,
+    }
+
+if __name__ == '__main__':
   from models import Board
   board = Board.random_board()
-
-  solve_board(board, 6)
+  print solve_board_multithreaded(board, depth=8, workers=4)
