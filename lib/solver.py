@@ -12,7 +12,7 @@ def in_board(pos):
   return (0 <= x < 6) and (0 <= y < 5)
 
 
-def recurse_paths(cursor, path=tuple(), depth=2):
+def recurse_paths(cursor, path=tuple(), depth=2, board=None):
   newpath = path + (cursor,)
 
   total_paths = [newpath]
@@ -27,8 +27,10 @@ def recurse_paths(cursor, path=tuple(), depth=2):
     (x, y + 1))
 
   for d in dirs:
-    if in_board(d) and (d != path[-1] if path else True):
-      total_paths.extend(recurse_paths(d, newpath, depth))
+    if in_board(d) and (d != path[-1] if path else True):  # remove backwards movements
+      if len(path) == 0 and board.get(cursor) == board.get(d):
+        continue  # remove redundant first moves
+      total_paths.extend(recurse_paths(d, newpath, depth, board))
   return total_paths
 
 
@@ -70,13 +72,13 @@ def worker(work_queue, done_queue, board, depth):
     done_queue.put(solve_position(start_pos, board, depth))
 
 # TODO: memoization of solved board states
-# TODO: don't explore first paths that flip the same piece
+# TODO: cull end state redundant moves
 
 def solve_position(start_pos, board, depth=5):
   max_combos = 0
   solution_path = None
 
-  for p in recurse_paths(start_pos, depth=depth):
+  for p in recurse_paths(start_pos, depth=depth, board=board):
     b = board.copy()
     score = b.runpath(p).score_board()
     if score > max_combos:
@@ -91,4 +93,5 @@ def solve_position(start_pos, board, depth=5):
 if __name__ == '__main__':
   from models import Board
   board = Board.random_board(1)
-  print solve_board_multithreaded(board, depth=9, workers=6)
+  solve_board_multithreaded(board, depth=10, workers=4)
+  print board
