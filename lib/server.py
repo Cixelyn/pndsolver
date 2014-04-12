@@ -26,6 +26,8 @@ class ApiHandler(web.RequestHandler):
       board = classify_orbs(frame)
 
       im = Image.fromarray(bgr_to_rgb(frame))
+      im.thumbnail((300,300), Image.ANTIALIAS)
+
       buf = cStringIO.StringIO()
       im.save(buf, format='png')
       buf.seek(0)

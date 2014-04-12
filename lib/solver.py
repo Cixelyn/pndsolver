@@ -74,24 +74,37 @@ def worker(work_queue, done_queue, board, depth):
 # TODO: memoization of solved board states
 # TODO: cull end state redundant moves
 
+
+def score_solution(path, combos, weights):
+  return len(combos)
+
+
 def solve_position(start_pos, board, depth=5):
-  max_combos = 0
+  max_score = 0
   solution_path = None
+  solution_combos = None
 
   for p in recurse_paths(start_pos, depth=depth, board=board):
     b = board.copy()
-    score = b.runpath(p).score_board()
-    if score > max_combos:
-      max_combos = score
+    combos = b.runpath(p).get_all_combos()
+    score = score_solution(p, combos, None)
+
+    if score > max_score:
+      max_score = score
       solution_path = p
+      solution_combos = combos
 
   return {
-      'score': max_combos,
+      'score': max_score,
       'path': solution_path,
+      'combos': solution_combos
     }
 
 if __name__ == '__main__':
   from models import Board
   board = Board.random_board(1)
-  solve_board_multithreaded(board, depth=10, workers=4)
+  solutions = solve_board_multithreaded(board, depth=3, workers=1)
+
+  from pprint import pprint
+  pprint(solutions)
   print board

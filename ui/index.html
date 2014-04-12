@@ -25,10 +25,12 @@
 
         <!-- left column -->
         <div class="col-xs-2">
-          <pndgrid board="board" paths="paths"></pndgrid>
-          <div id="map-container"></div>
-          <button id='btn-capture' class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
-          <img id="img-board" class="img-responsive" ng-src="{{frame}}" />
+          <div class="sidebar" data-spy='affix' data-offset-top='50'>
+            <pndgrid board="board" paths="paths"></pndgrid>
+            <div id="map-container"></div>
+            <button id='btn-capture' class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
+            <img id="img-board" class="img-responsive" ng-src="{{frame}}" />
+          </div>
         </div>
 
         <!-- main second column -->
@@ -109,7 +111,13 @@
                   <td>{{s.score}}</td>
                   <td>{{s.path.length}}</td>
                   <td>{{calculateDamage(s)}}</td>
-                  <td>{{s.combos}}</td>
+                  <td>
+                    <span ng-repeat="(comboColor, comboList) in s.combos">
+                      <span ng-repeat="count in comboList track by $index">
+                        <i class="glyphicon" ng-class="indexToGlyphicon(comboColor)"></i>&#215;{{count}}
+                      </span>
+                    </span>
+                  </td>
                   <td><button
                           class='btn btn-xs btn-primary'
                           ng-click="run(s.path)">Go!</button></td>

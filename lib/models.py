@@ -1,4 +1,5 @@
 import random
+from collections import defaultdict
 
 
 class Board(object):
@@ -68,6 +69,7 @@ class Board(object):
     """ mutates a board w/ matches removed """
     for m in matches:
       self.set(m, 0)
+
     for n in range(5):   # the lazy man's way
       for x in range(6):
         for y in range(5 - 1):
@@ -76,8 +78,8 @@ class Board(object):
             self.set((x, y + 1), self.get(p))
             self.set(p, 0)
 
-  def get_combos(self, matches):
-    """ returns a structure containing combo data on the board """
+  def get_current_combos(self, matches):
+    """ returns a structure containing combo data for a frozen board state """
     combos = []
 
     # floodfill all match combos
@@ -87,10 +89,10 @@ class Board(object):
       if p in matchset and self.get(p) == val and p not in checked:
         checked.add(p)
         visitcombo.add(p)
-        check(x  , y-1, val, matchset, visitcombo)
-        check(x  , y+1, val, matchset, visitcombo)
-        check(x-1, y  , val, matchset, visitcombo)
-        check(x+1, y  , val, matchset, visitcombo)
+        check(x, y - 1, val, matchset, visitcombo)
+        check(x, y + 1, val, matchset, visitcombo)
+        check(x - 1, y, val, matchset, visitcombo)
+        check(x + 1, y, val, matchset, visitcombo)
       return visitcombo
 
     for m in matches:
@@ -98,18 +100,22 @@ class Board(object):
         combos.append(check(m[0], m[1], self.get(m), matches, set()))
     return combos
 
-  def score_board(self):
-    """ scores the current configuration of the board """
+  def get_all_combos(self):
+    """ gets the full board combo data including drop matches """
     board = self.copy()
     combos = []
     while True:
       matches = board.get_matches()
       if len(matches):
-        combos.extend(board.get_combos(matches))
+        combos.extend(board.get_current_combos(matches))
         board.drop_matches(matches)
       else:
         break
-    return len(combos)
+
+    score = defaultdict(list)
+    for c in combos:
+      score[self.get(c.pop())].append(len(c) + 1)
+    return score
 
   def __str__(self):
     rows = []

@@ -161,4 +161,21 @@ app.controller('PndCtrl', function PndCtrl($scope, $http) {
     return $scope.team.hl + 1;
   }
 
+  $scope.indexToGlyphicon = function(index) {
+    switch (index) {
+      case "1":
+        return "glyphicon-fire";
+      case "2":
+        return "glyphicon-tint";
+      case "3":
+        return "glyphicon-leaf";
+      case "4":
+        return "glyphicon-asterisk";
+      case "5":
+        return "glyphicon-adjust";
+      case "6":
+        return "glyphicon-heart";
+    }
+  }
+
 });
