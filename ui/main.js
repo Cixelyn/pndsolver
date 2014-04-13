@@ -1,6 +1,26 @@
 /*jslint nomen: true*/
 /*global d3, angular, _, console*/
 
+
+_.mixin({
+  sum: function(obj, iterator, context) {
+    if (!iterator && _.isEmpty(obj)) return 0;
+    var result = 0;
+    if (!iterator && _.isArray(obj)) {
+      for (var i = obj.length - 1; i > -1; i -= 1) {
+        result += obj[i];
+      }
+      return result;
+    }
+    _.each(obj, function (value, index, list) {
+      var computed = iterator ? iterator.call(context, value, index, list) : value;
+      result += computed;
+    });
+    return result;
+  }
+});
+
+
 var app = angular.module('app', ['ngAnimate', 'chieffancypants.loadingBar']);
 
 function randomBoard() {
@@ -157,25 +177,75 @@ app.controller('PndCtrl', function PndCtrl($scope, $http) {
     return $scope.solutions.length > 0;
   };
 
-  $scope.calculateDamage = function(solution) {
-    return $scope.team.hl + 1;
+  function baseColorMultiplier(singleComboList) {
+    return _.chain(singleComboList)
+      .map(function(c) {return 1 + (c-3) * 0.25})
+      .sum()
+      .value();
   }
+
+  function baseComboMultiplier(combos) {
+    var count = _.chain(combos)
+      .values()
+      .map(function(c) {return c.length})
+      .sum()
+      .value();
+    return 1 + (count - 1) * 0.25;
+  }
+
+  $scope.calculateDamage = function(solution) {
+    var comboX = baseComboMultiplier(solution.combos);
+
+    var dmg = _.chain(['1', '2',' 3', '4', '5'])
+      .map(function(c) {return solution.combos[c];})  // have the combo count
+      .map(baseColorMultiplier)
+      .map(function(x, i) {
+        return $scope.team[$scope.indexToAbbr(i+1)] * x * comboX;
+      })
+      .sum()
+      .value();
+
+    if(dmg === 0) {
+      return '-'
+    } else {
+      return Math.floor(dmg);
+    }
+  };
+
+  $scope.calculateRecovery = function(solution) {
+    var baseX = baseColorMultiplier(solution.combos['6']);
+    var comboX = baseComboMultiplier(solution.combos);
+    var multiplier = (baseX * comboX);
+    if(multiplier == 0) return '-';
+    if($scope.team.hl) {
+      return Math.floor($scope.team.hl * multiplier);
+    } else {
+      return +(baseX * comboX).toFixed(1) + "x";
+    }
+
+    return baseX * comboX;
+  };
 
   $scope.indexToGlyphicon = function(index) {
     switch (index) {
-      case "1":
-        return "glyphicon-fire";
-      case "2":
-        return "glyphicon-tint";
-      case "3":
-        return "glyphicon-leaf";
-      case "4":
-        return "glyphicon-asterisk";
-      case "5":
-        return "glyphicon-adjust";
-      case "6":
-        return "glyphicon-heart";
+      case "1": return "glyphicon-fire";
+      case "2": return "glyphicon-tint";
+      case "3": return "glyphicon-leaf";
+      case "4": return "glyphicon-asterisk";
+      case "5": return "glyphicon-adjust";
+      case "6": return "glyphicon-heart";
     }
-  }
+  };
+
+  $scope.indexToAbbr = function(index) {
+    switch(index + "") {
+      case '1': return 'fr';
+      case '2': return 'wt';
+      case '3': return 'wd';
+      case '4': return 'lt';
+      case '5': return 'dk';
+      case '6': return 'hl';
+    }
+  };
 
 });

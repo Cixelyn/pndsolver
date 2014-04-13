@@ -20,21 +20,23 @@
   <body ng-controller="PndCtrl">
 
     <div class="container">
-      <h1 class='page-header'>pndsolver <small>control panel</small></h1>
       <div class="row">
 
         <!-- left column -->
-        <div class="col-xs-2">
-          <div class="sidebar" data-spy='affix' data-offset-top='50'>
-            <pndgrid board="board" paths="paths"></pndgrid>
-            <div id="map-container"></div>
-            <button id='btn-capture' class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
-            <img id="img-board" class="img-responsive" ng-src="{{frame}}" />
-          </div>
+        <div class="col-xs-2 sidebar">
+          <pndgrid board="board" paths="paths"></pndgrid>
+          <div id="map-container"></div>
+          <button id='btn-capture' class="btn btn-primary btn-block" ng-click="capture()">Capture</button>
+          <img id="img-board" class="img-responsive" ng-src="{{frame}}" />
         </div>
 
+
         <!-- main second column -->
-        <div class="col-xs-10">
+        <div class="col-xs-10 col-xs-offset-2 main">
+
+          <div class="row">
+            <h1 class='page-header'>pndsolver <small>control panel</small></h1>
+          </div>
 
           <!-- team stats section -->
           <div class="row">
@@ -101,7 +103,8 @@
                 <tr>
                   <th>Score</th>
                   <th>Length</th>
-                  <th>Damage</th>
+                  <th>Dmg Est</th>
+                  <th>Rcv</th>
                   <th>Combos</th>
                   <th>Run?</th>
                 </tr>
@@ -111,6 +114,7 @@
                   <td>{{s.score}}</td>
                   <td>{{s.path.length}}</td>
                   <td>{{calculateDamage(s)}}</td>
+                  <td>{{calculateRecovery(s)}}</td>
                   <td>
                     <span ng-repeat="(comboColor, comboList) in s.combos">
                       <span ng-repeat="count in comboList track by $index">

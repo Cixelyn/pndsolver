@@ -40,20 +40,23 @@
 .glyphicon-adjust {color: rgb(99, 33, 129);}
 .orb-5 {fill: rgb(99, 33, 129);}
 
+body {
+    overflow-y: scroll;
+    overflow: -moz-scrollbars-vertical;
+}
 
-/*@media (min-width: 768px) {*/
-    /*.sidebar {*/
-        /*position: fixed;*/
-        /*top: 51px;*/
-        /*bottom: 0;*/
-        /*left: 0;*/
-        /*z-index: 1000;*/
-        /*display: block;*/
-        /*padding: 20px;*/
-        /*overflow-x: hidden;*/
-        /*overflow-y: auto; *//* Scrollable contents if viewport is shorter than content. */
-        /*background-color: #f5f5f5;*/
-        /*border-right: 1px solid #eee;*/
-        /*max-width: 200px;*/
-    /*}*/
-/*}*/
+
+.sidebar {
+    position: fixed;
+    top: 10px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+}
+
