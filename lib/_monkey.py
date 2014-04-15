@@ -11,39 +11,43 @@ import time
 from com.android.monkeyrunner import MonkeyRunner, MonkeyDevice
 from collections import deque
 
-arg = sys.argv[-1].lower()
+try:
+  arg = sys.argv[1].lower()
+except Exception:
+  print "android bridge driver"
+  print "usage: _monkey.py [capture | run]"
+  sys.exit(0)
 
 if arg == "capture":
   device = MonkeyRunner.waitForConnection()
   result = device.takeSnapshot()
-  sys.stdout.write(result.convertToBytes('png'))
+  for b in result.convertToBytes('png'):
+    sys.stdout.write(chr(b & 0xff))
 
 elif arg == "run":
   device = MonkeyRunner.waitForConnection()
-  stream = deque(sys.stdin.read().split(';'))
 
-  sx, sy = stream.popleft()
+  stream = deque(sys.argv[2].split(':'))
+
+
+  def pop_coords():
+    x, y = map(int, stream.popleft().split(','))
+    return x * 100, y * 100
+
+  sx, sy = pop_coords()
   device.touch(sx, sy, MonkeyDevice.DOWN)
 
-  resolution = 10
-  steptime = 3 / (len(stream) * resolution)
+  resolution = 20.0
+  steptime = 5.0 / (len(stream) * resolution)
 
   while stream:
-    nx, ny = stream.popleft()
-
+    nx, ny = pop_coords()
     for i in range(resolution):
-      device.touch(
-        sx + (sx - nx) * i / resolution,
-        sy + (sy - ny) * i / resolution,
-        MonkeyDevice.MOVE
-      )
+      ix = int(sx + (nx - sx) * i / resolution)
+      iy = int(sy + (ny - sy) * i / resolution)
+      device.touch(ix, iy, MonkeyDevice.MOVE)
       time.sleep(steptime)
-
     sx, sy = nx, ny
 
   device.touch(sx, sy, MonkeyDevice.UP)
-
-else:
-  print "android bridge driver"
-  print "usage: _monkey.py [capture | run]"
 
